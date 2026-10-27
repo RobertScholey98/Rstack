@@ -1,0 +1,3 @@
+interface:
+  display_name: "tangela: Verify"
+  short_description: "Run a tier through the gate and classify failures"

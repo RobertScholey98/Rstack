@@ -24,6 +24,8 @@
     "./skills/engineering/domain-modeling",
     "./skills/engineering/codebase-design",
     "./skills/engineering/tdd",
-    "./skills/engineering/code-review"
+    "./skills/engineering/code-review",
+    "./skills/engineering/tangela/tangela-work",
+    "./skills/engineering/tangela/tangela-verify"
   ]
 }

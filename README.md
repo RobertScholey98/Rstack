@@ -44,7 +44,8 @@ None yet.
 
 ### Model-invoked
 
-None yet.
+- **[tangela-work](./skills/engineering/tangela/tangela-work/SKILL.md)**: The contract a worker follows to finish one unit: pin behaviour, prove tests red, commit one step at a time, verify through the gate and report facts.
+- **[tangela-verify](./skills/engineering/tangela/tangela-verify/SKILL.md)**: Run a verification tier through the kit's gate, and classify each failure as load, pre-existing or real before acting on it.
 
 ## Engineering
 
