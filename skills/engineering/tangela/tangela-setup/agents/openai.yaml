@@ -1,0 +1,5 @@
+interface:
+  display_name: "tangela: Setup"
+  short_description: "Write the repo contract and install the tangela kit"
+policy:
+  allow_implicit_invocation: false

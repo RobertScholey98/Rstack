@@ -25,6 +25,10 @@ test("a contract without the json tangela block is refused", () => {
   assert.throws(() => parseContract("# Contract\n\n```json\n{}\n```\n"), ContractError);
 });
 
+test("a tier with no steps is refused, so it can't pass by running nothing", () => {
+  assert.throws(() => parseContract(contract({ tiers: { unit: [] } })), /tiers\.unit has no steps/);
+});
+
 test("an unknown tier is refused", () => {
   assert.throws(() => parseContract(contract({ tiers: { nightly: [{ name: "a", run: "b" }] } })), /tiers are commit/);
 });

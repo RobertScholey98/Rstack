@@ -42,6 +42,9 @@ export function parseContract(markdown) {
     if (!Array.isArray(steps) || steps.some((step) => !step?.name || !step?.run)) {
       throw new ContractError(`tiers.${tier} must be a list of steps, each with a name and a run command`);
     }
+    if (steps.length === 0) {
+      throw new ContractError(`tiers.${tier} has no steps; leave the tier out if this repo doesn't have it`);
+    }
   }
 
   return {

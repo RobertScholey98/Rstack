@@ -40,7 +40,7 @@ The skills for running a program, from setup to close. Listed in [skills/enginee
 
 ### User-invoked
 
-None yet.
+- **[tangela-setup](./skills/engineering/tangela/tangela-setup/SKILL.md)**: Set a repo up for tangela: survey how it verifies, write the contract, install the kit and add the guarded commit hook.
 
 ### Model-invoked
 

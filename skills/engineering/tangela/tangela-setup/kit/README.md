@@ -1,6 +1,6 @@
 # The tangela kit
 
-Scripts that `tangela-setup` copies into a repo's gitignored `.tangela/scripts/` folder (everything here except `test/`). They need Node and git, and nothing else. Each reads the repo contract.
+Scripts that `tangela-setup` copies into a repo's gitignored `.tangela/scripts/` folder (everything here except `test/`), with a `kit.json` naming the plugin version they came from. They need Node and git, and nothing else. Each reads the repo contract.
 
 | Script | Does | Exit codes |
 | --- | --- | --- |

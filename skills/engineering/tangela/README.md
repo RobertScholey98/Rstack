@@ -6,7 +6,7 @@ The skills for running a tangela program, from setup to close. [GLOSSARY.md](../
 
 Only a person can run these, by typing the name.
 
-None yet.
+- **[tangela-setup](./tangela-setup/SKILL.md)**: Set a repo up for tangela: survey how it verifies, write the contract, install the kit and add the guarded commit hook.
 
 ## Model-invoked
 
