@@ -1,0 +1,3 @@
+interface:
+  display_name: "Ratchets only go down"
+  short_description: "Gate on today's count and only ever lower it"

@@ -25,7 +25,7 @@ Before going further, confirm the fixed point resolves (`git rev-parse <fixed-po
 Look for the originating spec, in this order:
 
 1. A path the user passed as an argument.
-2. In a tangela program, the unit's brief. The repo contract (`docs/agents/tangela.md`) says where the program store is, and the brief is in its `briefs/` folder. If the repo has no contract and the user expects one, tell them to run `/tangela-setup`.
+2. In a tangela program, the unit's brief: `briefs/<unit>.md` in the program store. `node .tangela/scripts/program.mjs` prints the store's path. If the checkout belongs to no program and the user expects one, tell them to run `/tangela`.
 3. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.), fetched with the tracker's own command-line tool.
 4. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature.
 5. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
@@ -57,6 +57,8 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 ### 4. Spawn both sub-agents in parallel
 
 Issue both sub-agent calls together, in the foreground, and aggregate the reports they return.
+
+In a tangela program, start both on the `reviewer` model and effort from the orders' Models section. The two axes together are one review when tangela-land counts reviews.
 
 **Standards sub-agent prompt** should include:
 

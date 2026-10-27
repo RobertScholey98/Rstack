@@ -1,0 +1,5 @@
+interface:
+  display_name: "tangela: Plan"
+  short_description: "Cut rulings into units and briefs, and write the orders"
+policy:
+  allow_implicit_invocation: false

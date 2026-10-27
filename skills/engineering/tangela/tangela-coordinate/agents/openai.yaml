@@ -1,0 +1,5 @@
+interface:
+  display_name: "tangela: Coordinate"
+  short_description: "Launch, drain and land a tangela program's units"
+policy:
+  allow_implicit_invocation: false

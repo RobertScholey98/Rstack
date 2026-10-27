@@ -1,0 +1,3 @@
+interface:
+  display_name: "Marks are the finish line"
+  short_description: "Tag known-wrong behaviour with the unit that fixes it"

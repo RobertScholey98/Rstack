@@ -114,6 +114,20 @@ test("--base starts the branch from the program's integration branch", () => {
   assert.equal(existsSync(join(worktreeOf(root, "next-unit"), "program.txt")), true);
 });
 
+test("a unit's worktree belongs to the same program as the checkout it came from", () => {
+  const root = project();
+  write(root, { ".tangela/program.json": '{ "name": "tidy", "store": "/stores/tidy", "branch": "program" }\n' });
+
+  const { code, out } = runKit("worktree.mjs", ["in-program", "--no-install"], { cwd: root });
+  assert.equal(code, 0, out);
+  const program = JSON.parse(readFileSync(join(worktreeOf(root, "in-program"), ".tangela", "program.json"), "utf8"));
+  assert.deepEqual(program, { name: "tidy", store: "/stores/tidy", branch: "program" });
+
+  const outside = project();
+  assert.equal(runKit("worktree.mjs", ["outside", "--no-install"], { cwd: outside }).code, 0);
+  assert.equal(existsSync(join(worktreeOf(outside, "outside"), ".tangela", "program.json")), false);
+});
+
 test("a unit name that isn't kebab case makes no worktree", () => {
   const root = project();
   const { code, out } = runKit("worktree.mjs", ["Add Login"], { cwd: root });

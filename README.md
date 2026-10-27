@@ -2,7 +2,7 @@
 
 Agent skills for Claude Code and Codex.
 
-The first bundle is **tangela**, a method for untangling a codebase that has started to strangle itself. Survey the tangle, decide what the code should look like, turn each decision into a check that fails, cut the work into units, run them, and land each one behind a gate. It scales from one session to a set of agents working in parallel under a coordinator.
+The first bundle is **tangela**, a method for untangling a codebase that has started to strangle itself. Investigate the tangle, decide what the code should look like, turn each decision into a check that fails, cut the work into units, run them, and land each one behind a gate. It scales from one session to a set of agents working in parallel under a coordinator.
 
 tangela leans on a set of generic engineering skills, which also work on their own. [GLOSSARY.md](./GLOSSARY.md) defines the words the skills use.
 
@@ -36,16 +36,25 @@ Codex reads `.claude-plugin/` when a repo has no `.codex-plugin/`, and updates a
 
 ## tangela
 
-The skills for running a program, from setup to close. Listed in [skills/engineering/tangela](./skills/engineering/tangela/README.md).
+The skills for running a program, from setup to close, in the order a program uses them. Listed in [skills/engineering/tangela](./skills/engineering/tangela/README.md), with the three agents the skills start.
 
 ### User-invoked
 
-- **[tangela-setup](./skills/engineering/tangela/tangela-setup/SKILL.md)**: Set a repo up for tangela: survey how it verifies, write the contract, install the kit and add the guarded commit hook.
+- **[tangela](./skills/engineering/tangela/tangela/SKILL.md)**: Where the program stands, the next skill to run, and what needs you.
+- **[tangela-setup](./skills/engineering/tangela/tangela-setup/SKILL.md)**: Set a repo up for tangela, with its contract, kit and commit hook.
+- **[tangela-investigate](./skills/engineering/tangela/tangela-investigate/SKILL.md)**: Start a program with a baseline of the stack or a sweep for defects. It ends in numbered findings, each with the question it asks you.
+- **[tangela-decide](./skills/engineering/tangela/tangela-decide/SKILL.md)**: Grill the findings into rulings, one question at a time, and write them into ADRs, conventions and the glossary.
+- **[tangela-plan](./skills/engineering/tangela/tangela-plan/SKILL.md)**: Cut the rulings into units and briefs, order the units by file overlap, choose solo or coordinated mode, and write the orders.
+- **[tangela-coordinate](./skills/engineering/tangela/tangela-coordinate/SKILL.md)**: Run a tangela program's units, from launch to landing.
+- **[tangela-close](./skills/engineering/tangela/tangela-close/SKILL.md)**: End a program once every ratchet is at target and no pending mark is left. Fold its log into the repo's docs, and archive its store.
 
 ### Model-invoked
 
+- **[tangela-encode](./skills/engineering/tangela/tangela-encode/SKILL.md)**: Turn a ruling into a check that fails the build, and record its baseline and legacy violators.
 - **[tangela-work](./skills/engineering/tangela/tangela-work/SKILL.md)**: The contract a worker follows to finish one unit: pin behaviour, prove tests red, commit one step at a time, verify through the gate and report facts.
 - **[tangela-verify](./skills/engineering/tangela/tangela-verify/SKILL.md)**: Run a verification tier through the kit's gate, and classify each failure as load, pre-existing or real before acting on it.
+- **[tangela-land](./skills/engineering/tangela/tangela-land/SKILL.md)**: Land one finished unit on the program's integration branch.
+- **[tangela-doctor](./skills/engineering/tangela/tangela-doctor/SKILL.md)**: Check the machine and the branch before a launch or a landing, and say go, hold or stop.
 
 ## Engineering
 
@@ -64,6 +73,14 @@ Generic skills tangela leans on, including the `principle-*` leaves. Listed in [
 - **[codebase-design](./skills/engineering/codebase-design/SKILL.md)**: The vocabulary for designing deep modules: small interfaces at clean seams, testable through the interface.
 - **[tdd](./skills/engineering/tdd/SKILL.md)**: Test-driven development with a red-green-refactor loop, one vertical slice at a time, at seams agreed up front.
 - **[code-review](./skills/engineering/code-review/SKILL.md)**: Review a diff on two axes in parallel: Standards (the repo's documented standards plus a code-smell baseline) and Spec (does it do what the spec asked).
+- **[principle-one-way-per-concern](./skills/engineering/principle-one-way-per-concern/SKILL.md)**: Where two patterns do one job, keep one, delete the other and ban it.
+- **[principle-ratchets-only-go-down](./skills/engineering/principle-ratchets-only-go-down/SKILL.md)**: Gate on today's count of a pattern being retired, and only ever lower it.
+- **[principle-outcome-not-mechanism](./skills/engineering/principle-outcome-not-mechanism/SKILL.md)**: A brief names the outcome and the proof, defines its words, and allows "no change, with evidence".
+- **[principle-one-home-one-writer](./skills/engineering/principle-one-home-one-writer/SKILL.md)**: Each rule has one source, and each shared file has one writer.
+- **[principle-pin-then-change](./skills/engineering/principle-pin-then-change/SKILL.md)**: Pin behaviour in a passing test or snapshot, then change the code under the pin.
+- **[principle-prove-it-red](./skills/engineering/principle-prove-it-red/SKILL.md)**: A new test counts only if it fails on the old code, the way the bug really happens.
+- **[principle-marks-are-the-finish-line](./skills/engineering/principle-marks-are-the-finish-line/SKILL.md)**: Known-wrong behaviour gets a pending mark tagged with its unit, and the unit lands only when its marks are flipped.
+- **[principle-rerun-alone-then-decide](./skills/engineering/principle-rerun-alone-then-decide/SKILL.md)**: A failure is load, pre-existing or real only after it has rerun alone on the branch and on the base.
 
 ## Credits
 

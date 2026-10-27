@@ -50,15 +50,38 @@ export function parseContract(markdown) {
   if (contract.node !== undefined && !VERSION.test(String(contract.node).trim())) {
     throw new ContractError(`"node" is "${contract.node}"; give a version or the start of one, such as "24" or "24.13"`);
   }
+  if (contract.log !== undefined && (typeof contract.log !== "string" || !contract.log.trim())) {
+    throw new ContractError(`"log" must be a folder path, such as "docs/tangela/log"`);
+  }
 
   return {
     defaultBranch: "main",
     tiers: {},
     widen: [],
     worktree: {},
+    log: "docs/tangela/log",
     ...contract,
     eol: { crlf: [], ...contract.eol },
+    marks: contract.marks === undefined ? null : parseMarks(contract.marks),
   };
+}
+
+function parseMarks(marks) {
+  if (typeof marks?.pattern !== "string") {
+    throw new ContractError(`"marks" needs a "pattern": a regular expression whose first group is the unit id`);
+  }
+  let groups;
+  try {
+    groups = new RegExp(`${marks.pattern}|`).exec("").length - 1;
+  } catch (error) {
+    throw new ContractError(`marks.pattern isn't a valid regular expression: ${error.message}`);
+  }
+  if (groups < 1) throw new ContractError("marks.pattern needs a group that captures the unit id");
+  const paths = marks.paths ?? [];
+  if (!Array.isArray(paths) || paths.some((path) => typeof path !== "string")) {
+    throw new ContractError("marks.paths must be a list of globs");
+  }
+  return { pattern: marks.pattern, paths };
 }
 
 // The Node version gates should run on: the contract's, else .nvmrc or

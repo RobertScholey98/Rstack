@@ -3,12 +3,13 @@
 //
 //   node .tangela/scripts/checks/eol-bom.mjs            checks what's staged
 //   node .tangela/scripts/checks/eol-bom.mjs <files>    checks these files
+//   node .tangela/scripts/checks/eol-bom.mjs --all      checks every tracked file's working copy
 //   --fix                                              rewrites the working-tree copies as UTF-8 with LF
 //
 // CRLF is allowed in files that .gitattributes marks eol=crlf, and in files
 // matching the contract's eol.crlf globs. Exit codes: 0 clean, 1 problems.
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
 import { parseArgs } from "node:util";
 import { ContractError, readContract, repoRoot } from "../lib/contract.mjs";
@@ -54,7 +55,7 @@ export function normalise(buffer, crlfAllowed) {
   return Buffer.from(text, "utf8");
 }
 
-export function checkFiles({ cwd = process.cwd(), files = [], fix = false, say = console.log }) {
+export function checkFiles({ cwd = process.cwd(), files = [], all = false, fix = false, say = console.log }) {
   const root = repoRoot(cwd);
   let crlfGlobs = [];
   try {
@@ -63,10 +64,12 @@ export function checkFiles({ cwd = process.cwd(), files = [], fix = false, say =
     if (!(error instanceof ContractError)) throw error;
   }
 
-  const staged = files.length === 0;
-  const paths = staged
-    ? splitNul(git(["diff", "--cached", "--name-only", "-z", "--diff-filter=ACMR"], { cwd: root }))
-    : files.map((file) => posix(relative(root, resolve(cwd, file))));
+  const staged = !all && files.length === 0;
+  const paths = all
+    ? splitNul(git(["ls-files", "-z"], { cwd: root })).filter((path) => isFile(join(root, path)))
+    : staged
+      ? splitNul(git(["diff", "--cached", "--name-only", "-z", "--diff-filter=ACMR"], { cwd: root }))
+      : files.map((file) => posix(relative(root, resolve(cwd, file))));
   const crlfByAttribute = crlfAttributes(root, paths);
 
   let failed = 0;
@@ -99,6 +102,11 @@ function crlfAttributes(root, paths) {
   return crlf;
 }
 
+// A tracked path can be deleted from the working tree, or be a submodule.
+function isFile(path) {
+  return statSync(path, { throwIfNoEntry: false })?.isFile() ?? false;
+}
+
 function splitNul(text) {
   return text.split("\0").filter(Boolean);
 }
@@ -108,9 +116,12 @@ function posix(path) {
 }
 
 if (isMain(import.meta.url)) {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { fix: { type: "boolean" } } });
+  const { values, positionals } = parseArgs({
+    allowPositionals: true,
+    options: { all: { type: "boolean" }, fix: { type: "boolean" } },
+  });
   try {
-    const { failed, staged } = checkFiles({ files: positionals, fix: values.fix });
+    const { failed, staged } = checkFiles({ files: positionals, all: values.all, fix: values.fix });
     process.exit(failed && (staged || !values.fix) ? 1 : 0);
   } catch (error) {
     console.error(`eol-bom: ${error.message}`);

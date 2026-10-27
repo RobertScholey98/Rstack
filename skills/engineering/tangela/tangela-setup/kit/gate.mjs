@@ -3,28 +3,30 @@
 //
 //   node .tangela/scripts/gate.mjs <tier> [--base <ref>] [--no-rerun] [--lock-timeout <minutes>]
 //
+// The unit tier widens when the diff since the base touches a shared path.
+// The base is --base, else the one worktree.mjs recorded, else the default
+// branch, so a shared change that already landed doesn't widen later units.
+//
 // Exit codes: 0 pass, 1 fail, 2 the contract or setup is broken,
 // 3 every failure passed when rerun alone (load).
 
 import { spawn } from "node:child_process";
 import { createWriteStream, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { cpus, freemem, homedir, totalmem } from "node:os";
+import { cpus, freemem, totalmem } from "node:os";
 import { dirname, join, relative, sep } from "node:path";
 import { parseArgs } from "node:util";
 import { ContractError, expectedNode, nodeMatches, readContract, repoRoot } from "./lib/contract.mjs";
 import { git } from "./lib/git.mjs";
 import { matchesAny } from "./lib/glob.mjs";
 import { isMain } from "./lib/main.mjs";
+import { tangelaHome } from "./lib/store.mjs";
+import { baseRef } from "./lib/unit.mjs";
 
 const EXIT = { PASS: 0, FAIL: 1, BROKEN: 2, LOAD: 3 };
 const MAX_RERUNS = 5;
 const STALE_LOCK_MS = 6 * 60 * 60_000;
 
 class LockTimeout extends Error {}
-
-export function tangelaHome() {
-  return process.env.TANGELA_HOME ?? join(homedir(), ".claude", "tangela");
-}
 
 export async function gate({
   cwd = process.cwd(),
@@ -42,7 +44,7 @@ export async function gate({
   const startedAt = Date.now();
   const head = git(["rev-parse", "HEAD"], { cwd: root });
   const dirty = git(["status", "--porcelain"], { cwd: root }) !== "";
-  const { ranTier, why } = chooseTier(root, contract, tier, base ?? contract.defaultBranch);
+  const { ranTier, why } = chooseTier(root, contract, tier, baseRef(root, contract, base).from);
   const expected = expectedNode(root, contract);
   const node = {
     version: process.version,
@@ -304,7 +306,7 @@ function formatLoad({ cpu, cores, freeGb, totalGb }) {
   return `cpu ${cpu}% of ${cores} cores, ${freeGb} of ${totalGb} GB memory free`;
 }
 
-function duration(ms) {
+export function duration(ms) {
   if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
   const seconds = Math.round(ms / 1000);
   return `${Math.floor(seconds / 60)}m${String(seconds % 60).padStart(2, "0")}s`;

@@ -25,8 +25,25 @@
     "./skills/engineering/codebase-design",
     "./skills/engineering/tdd",
     "./skills/engineering/code-review",
+    "./skills/engineering/principle-one-way-per-concern",
+    "./skills/engineering/principle-ratchets-only-go-down",
+    "./skills/engineering/principle-outcome-not-mechanism",
+    "./skills/engineering/principle-one-home-one-writer",
+    "./skills/engineering/principle-rerun-alone-then-decide",
+    "./skills/engineering/principle-marks-are-the-finish-line",
+    "./skills/engineering/principle-pin-then-change",
+    "./skills/engineering/principle-prove-it-red",
+    "./skills/engineering/tangela/tangela",
     "./skills/engineering/tangela/tangela-setup",
+    "./skills/engineering/tangela/tangela-investigate",
+    "./skills/engineering/tangela/tangela-decide",
+    "./skills/engineering/tangela/tangela-plan",
+    "./skills/engineering/tangela/tangela-coordinate",
+    "./skills/engineering/tangela/tangela-close",
     "./skills/engineering/tangela/tangela-work",
-    "./skills/engineering/tangela/tangela-verify"
+    "./skills/engineering/tangela/tangela-verify",
+    "./skills/engineering/tangela/tangela-encode",
+    "./skills/engineering/tangela/tangela-land",
+    "./skills/engineering/tangela/tangela-doctor"
   ]
 }

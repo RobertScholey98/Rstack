@@ -1,0 +1,5 @@
+interface:
+  display_name: "tangela: Close"
+  short_description: "Prove a program's finish line, fold its log and archive it"
+policy:
+  allow_implicit_invocation: false

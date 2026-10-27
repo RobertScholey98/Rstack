@@ -66,3 +66,11 @@ test("--fix rewrites the named files as UTF-8 with LF", () => {
   assert.match(out, /notes\.md: fixed/);
   assert.equal(readFileSync(join(root, "notes.md"), "utf8"), "one\ntwo\n");
 });
+
+test("--all checks every tracked file's working copy, and nothing untracked", () => {
+  const root = repo({ "a.txt": "a\n", "b.txt": "b\r\n" });
+  write(root, { "untracked.txt": "c\r\n" });
+  const { code, out } = runKit("checks/eol-bom.mjs", ["--all"], { cwd: root });
+  assert.equal(code, 1, out);
+  assert.equal(out.trim(), ["b.txt: has CRLF line endings (1 lines)", "eol-bom: 1 of 3 file(s) had problems"].join("\n"));
+});

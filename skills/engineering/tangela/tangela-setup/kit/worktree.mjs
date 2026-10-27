@@ -21,7 +21,7 @@ import { git } from "./lib/git.mjs";
 import { isMain } from "./lib/main.mjs";
 
 const UNIT = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-const KIT_ITEMS = ["scripts", "machine.md"];
+const KIT_ITEMS = ["scripts", "machine.md", "program.json"];
 
 export async function createWorktree({ cwd = process.cwd(), unit, base, install = true, say = console.log }) {
   if (!UNIT.test(unit ?? "")) throw new ContractError(`The unit name "${unit}" must be lowercase kebab case`);

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Principle: Rerun alone, then decide"
+  short_description: "Classify a failure as load, pre-existing or real before acting"

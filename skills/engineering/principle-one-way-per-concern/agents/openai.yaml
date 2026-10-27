@@ -1,0 +1,3 @@
+interface:
+  display_name: "One way per concern"
+  short_description: "Keep one pattern per job, delete and ban the rest"

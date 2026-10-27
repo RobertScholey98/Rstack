@@ -1,6 +1,6 @@
 # The unit report
 
-Fill this in and hand it back as your final message. Leave out a section only when it would be empty, and say "none" for a table with no rows. Every claim names its evidence: a commit, a test name, a log path or a number.
+Fill this in and hand it back as your final message. Start from the output of `node .tangela/scripts/report-facts.mjs`, which prints the commits, the files and tests changed, the marks flipped and the last gate's verdict. Leave out a section only when it would be empty, and say "none" for a table with no rows. Every claim is a **fact**: it names its commit, test, count, log path or the gate's verdict line.
 
 ```markdown
 # Report: <unit>

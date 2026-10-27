@@ -1,0 +1,3 @@
+interface:
+  display_name: "tangela: Doctor"
+  short_description: "Preflight the machine and branch before a launch or landing"

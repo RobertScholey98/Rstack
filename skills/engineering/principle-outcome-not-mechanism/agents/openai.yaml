@@ -1,0 +1,3 @@
+interface:
+  display_name: "Outcome, not mechanism"
+  short_description: "Brief the outcome and the proof, never the method"

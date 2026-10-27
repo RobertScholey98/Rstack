@@ -1,0 +1,3 @@
+interface:
+  display_name: "tangela: Encode"
+  short_description: "Turn a ruling into a check that fails the build"

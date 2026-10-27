@@ -23,6 +23,8 @@ The check reads the staged files, so it sees what the commit will hold, not the 
 | A hook manager configured in a file | Add a pre-commit command that runs the block, in the manager's own config format. Keep the guard. |
 | Only `.git/hooks`, or nothing | Create `.githooks/pre-commit` holding `#!/bin/sh` and the block, commit it, and run `git config core.hooksPath .githooks`. Say in the contract that each clone runs that once. |
 
+`doctor.mjs` looks for the block in three places: the `pre-commit` in the `core.hooksPath` folder (or `.git/hooks`), the `pre-commit` in the folder above `core.hooksPath` (where husky keeps the script its generated shim runs), and a hook manager's config file at the repo root (`lefthook.yml`, `.pre-commit-config.yaml`, `.simple-git-hooks.json` or `package.json`).
+
 A hook runs with the PATH of whatever started the commit. When a version manager puts Node on the PATH only in some shells, a commit from another shell dies with "command not found" (exit 127). Write in `.tangela/machine.md` how each shell gets Node.
 
 A hook file needs LF line endings and the executable bit, on every platform. On Windows, set the bit in git with `git update-index --chmod=+x <file>`.

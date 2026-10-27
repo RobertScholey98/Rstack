@@ -10,7 +10,7 @@ test("the example contract in the kit's README parses", () => {
   const parsed = parseContract(readFileSync(join(KIT, "README.md"), "utf8"));
   assert.deepEqual(Object.keys(parsed.tiers), ["commit", "unit", "widened", "merge"]);
   assert.equal(parsed.tiers.unit[1].lock, true);
-  assert.deepEqual(parsed.worktree.ports, [5173, 5180]);
+  assert.deepEqual(parsed.worktree.ports, [3000, 3009]);
 });
 
 test("a contract fills in its defaults", () => {
@@ -19,6 +19,20 @@ test("a contract fills in its defaults", () => {
   assert.deepEqual(parsed.widen, []);
   assert.deepEqual(parsed.eol, { crlf: [] });
   assert.equal(parsed.tiers.unit[0].run, "npm test");
+  assert.equal(parsed.log, "docs/tangela/log");
+  assert.equal(parsed.marks, null);
+});
+
+test("marks keep their pattern and default to no paths", () => {
+  const parsed = parseContract(contract({ marks: { pattern: "pending\\(([a-z0-9-]+)\\)" }, log: "docs/log" }));
+  assert.deepEqual(parsed.marks, { pattern: "pending\\(([a-z0-9-]+)\\)", paths: [] });
+  assert.equal(parsed.log, "docs/log");
+});
+
+test("a marks pattern without a group for the unit is refused", () => {
+  assert.throws(() => parseContract(contract({ marks: { pattern: "pending" } })), /needs a group/);
+  assert.throws(() => parseContract(contract({ marks: { pattern: "(" } })), /isn't a valid regular expression/);
+  assert.throws(() => parseContract(contract({ marks: { pattern: "(x)", paths: "src" } })), /list of globs/);
 });
 
 test("a contract without the json tangela block is refused", () => {

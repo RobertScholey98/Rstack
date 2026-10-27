@@ -1,0 +1,3 @@
+interface:
+  display_name: "Pin, then change"
+  short_description: "Pin behaviour in a test before changing it"

@@ -1,0 +1,5 @@
+interface:
+  display_name: "tangela"
+  short_description: "Where the program is, what is next, and what needs you"
+policy:
+  allow_implicit_invocation: false

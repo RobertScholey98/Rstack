@@ -31,7 +31,13 @@ To set up a checkout of your own, run `/tangela-setup`. Without the kit, commits
 
 ## Worktrees
 
-<Which gitignored files a worktree copies, and why it needs each. The install command. The port range, what limits it, and how a worktree turns the port in `.tangela/worktree.json` into the repo's own settings (an env var, or an offset when it needs several ports).>
+<Which gitignored files a worktree copies, and why it needs each. The install command. The port range, what limits it, and how a worktree turns the port in `.tangela/worktree.json` into the repo's own settings (an env var, or an offset when it needs several ports). Every `worktree` field is optional: leave out the ones this repo doesn't need.>
+
+## Program work
+
+Landing entries go in `<log folder>`, one per landed unit. Commits that touch only this folder are the landings' own, so `doctor.mjs` doesn't count them as someone else's changes.
+
+<How this repo marks behaviour known to be wrong until a unit fixes it, and which files may hold a mark. A mark is the runner's expected-failure form, its reason opening with the unit id; the "principle-marks-are-the-finish-line" skill names the form for each runner. The `marks` pattern finds them, with the unit id in its first group, such as `pending ([a-z0-9-]+)`. A step's `failures` pattern must not match a marked test's line: node:test's TAP, for one, prints `# TODO` on its `not ok` lines. Leave out this paragraph and the `marks` field when the repo doesn't use marks.>
 
 ## CI
 
@@ -60,7 +66,9 @@ CI runs the same commands as the gate, without the kit: <where the CI config liv
     "install": "<frozen install command>",
     "ports": [<low>, <high>]
   },
-  "eol": { "crlf": [] }
+  "eol": { "crlf": [] },
+  "log": "docs/tangela/log",
+  "marks": { "pattern": "<regex, group 1 is the unit id>", "paths": [] }
 }
 ```
 ````

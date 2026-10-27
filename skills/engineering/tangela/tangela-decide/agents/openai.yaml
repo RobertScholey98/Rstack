@@ -1,0 +1,5 @@
+interface:
+  display_name: "tangela: Decide"
+  short_description: "Grill findings into rulings, one question at a time"
+policy:
+  allow_implicit_invocation: false

@@ -110,6 +110,30 @@ test("a unit gate widens when the diff touches a shared path", () => {
   assert.equal(lastGate(root).ranTier, "widened");
 });
 
+test("a unit gate diffs against the worktree's recorded base, so a shared change that landed doesn't widen it", () => {
+  const tiers = {
+    unit: [{ name: "touched", run: "node say.cjs touched" }],
+    widened: [{ name: "everything", run: "node say.cjs everything" }],
+  };
+  const root = repo({ ...SCRIPTS, "docs/agents/tangela.md": contract({ tiers, widen: ["src/shared/**"] }) });
+  git(root, "switch", "-q", "-c", "program");
+  write(root, { "src/shared/b.js": "export {};\n" });
+  git(root, "add", "-A");
+  git(root, "commit", "-q", "-m", "an earlier unit landed shared code");
+  git(root, "switch", "-q", "-c", "later-unit");
+  write(root, { "src/feature/a.js": "export {};\n", ".tangela/worktree.json": JSON.stringify({ unit: "later-unit", base: "program" }) });
+  git(root, "add", "-A");
+  git(root, "commit", "-q", "-m", "feature only");
+
+  const recorded = gateIn(root, "unit");
+  assert.equal(recorded.code, 0, recorded.out);
+  assert.match(recorded.out, /^gate unit, at [0-9a-f]{12}$/m);
+  assert.equal(lastGate(root).ranTier, "unit");
+
+  const given = gateIn(root, "unit", ["--base", "main"]);
+  assert.match(given.out, /widened because it touches src\/shared\/b\.js/);
+});
+
 test("a locked step waits for the e2e lock and gives up at the timeout", () => {
   const root = repo({
     ...SCRIPTS,

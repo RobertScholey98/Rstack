@@ -1,0 +1,17 @@
+{
+  "description": "tangela: warn when a repo's kit is out of date, and put a running program's orders and status in front of the session",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.mjs\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

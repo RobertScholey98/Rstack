@@ -1,6 +1,6 @@
 ---
 name: tangela-setup
-description: Set a repo up for tangela. Survey how it verifies, write the contract, install the kit and add the guarded commit hook.
+description: Set a repo up for tangela, with its contract, kit and commit hook.
 disable-model-invocation: true
 ---
 
@@ -18,7 +18,7 @@ Rerunning is safe. It upgrades the kit and updates the contract in place. If a c
 
 Facts are yours to find, never the user's. Read the repo for:
 
-- **The repo's rules for agents**, in files such as `AGENTS.md` and `CLAUDE.md`. They may forbid running some commands. Don't run those during the survey, and don't put them in a tier without asking the user.
+- **The repo's rules for agents**, in files such as `AGENTS.md` and `CLAUDE.md`. They may forbid running some commands. During the survey, run only commands they allow, and ask the user before putting a forbidden one in a tier.
 - **The default branch**, from the remote's HEAD.
 - **What CI runs**, step by step. It's the most reliable list of how this repo really verifies.
 - **The commit hook** as it is today: what it runs, and what manages it. That's a folder named by `core.hooksPath`, a hook manager that generates that folder when dependencies install, or plain `.git/hooks`.
@@ -26,6 +26,8 @@ Facts are yours to find, never the user's. Read the repo for:
 - **Gitignored files a fresh checkout needs** to build and test, such as local env files. `git status --ignored` lists candidates.
 - **The ports** a dev server uses, and how a second copy would avoid them: a port setting, or an offset. An allowlist somewhere (CORS, sign-in redirects) often limits the range.
 - **Files that must keep CRLF**, such as Windows scripts, with no `.gitattributes` rule saying so.
+
+Done when you can name, for each item above, what you found or that the repo has none, with the file or command that showed it.
 
 ## 2. Install
 
@@ -39,13 +41,15 @@ It replaces `.tangela/scripts/`, stamps it with the plugin's version, and adds `
 
 Then write `.tangela/machine.md`: what an agent on this machine needs that the repo can't say. How each shell finds the right Node, path-length limits and the settings that got around them, shell quirks, ports other software holds. One fact per line. `worktree.mjs` copies it into every worktree.
 
+Done when the installer has finished without an error, `.tangela/scripts/kit.json` exists, and `.tangela/machine.md` is written.
+
 ## 3. Write the contract
 
 Fill in the template in [CONTRACT.md](CONTRACT.md). Map the commands onto the tiers:
 
 | Tier | Holds |
 | --- | --- |
-| `commit` | What the hook checks, over the whole tree, so the gate can rerun it. Where the hook only looks at staged files, use the same tool's whole-tree check. |
+| `commit` | What the hook checks, over the whole tree, so the gate can rerun it. Where the hook only looks at staged files, use the same tool's whole-tree check. Where it runs only the kit's checks, that is `node .tangela/scripts/checks/eol-bom.mjs --all`. |
 | `unit` | The checks a worker can afford once per unit: types, lint, unit tests, and end-to-end tests for touched features when the runner can pick them. |
 | `widened` | `unit`, plus the full suites that a change to shared code could break. |
 | `merge` | Everything CI runs, including the full end-to-end suite. |
@@ -62,9 +66,13 @@ Some calls are the user's: which suites `unit` can afford when the full set is s
 
 Add the block in [HOOK.md](HOOK.md) to the end of the repo's pre-commit hook. Keep what the hook already runs: teammates without the kit rely on it, and CI never runs the kit.
 
+Done when the block sits at the end of the hook file and everything the hook ran before still runs.
+
 ## 5. Commit
 
 Commit the contract, the hook change and any `.gitignore` change together, through the hook. Don't push. A worktree starts from a commit, so the proofs below need this one.
+
+Done when the commit has passed the hook and `git status` shows none of those files changed.
 
 ## 6. Prove it
 

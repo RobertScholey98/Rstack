@@ -1,0 +1,5 @@
+interface:
+  display_name: "tangela: Investigate"
+  short_description: "Baseline the stack or sweep the code for defects"
+policy:
+  allow_implicit_invocation: false

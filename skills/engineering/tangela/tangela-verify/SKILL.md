@@ -1,6 +1,6 @@
 ---
 name: tangela-verify
-description: Run a tangela verification tier through the kit's gate and classify every failure before acting on it. Use when a tangela worker or coordinator verifies a unit, when a gate fails or flakes, or when deciding whether a failure is load, already broken on the base, or real.
+description: Run a tangela verification tier through the kit's gate and classify every failure before acting on it. Use when a tangela worker or coordinator verifies a unit, or when a gate fails or flakes and you must decide whether a failure is load, already broken on the base, or real.
 ---
 
 # tangela-verify
@@ -21,7 +21,7 @@ node .tangela/scripts/gate.mjs <tier>
 
 A worker runs `unit`, and the gate widens it by itself when the diff touches shared code. A worker never runs `merge`. That tier belongs to the coordinator, and a worker repeating it is the most expensive mistake a program can make.
 
-If `.tangela/scripts/gate.mjs` or the contract is missing, stop and say so. Tell the user to run `/tangela-setup`. Don't run the tier's commands by hand, and don't write a runner of your own.
+If `.tangela/scripts/gate.mjs` or the contract is missing, stop and say so. Tell the user to run `/tangela-setup`. Run tiers only through `gate.mjs`.
 
 ## Reading the verdict
 
@@ -30,7 +30,7 @@ The gate's last line is the verdict, and `.tangela/logs/last-gate.json` holds th
 | Verdict | Exit | Do |
 | --- | --- | --- |
 | `GATE PASS` | 0 | Done. Quote the verdict line in your report. |
-| `GATE LOAD` | 3 | Every failure passed when rerun alone. Record it as load, with the load reading the gate printed. Don't change code for it. |
+| `GATE LOAD` | 3 | Every failure passed when rerun alone. Record it as load, with the load reading the gate printed, and leave the code as it is. |
 | `GATE FAIL` | 1 | Classify each failure before touching code. |
 | `GATE BROKEN` | 2 | The contract or the setup is wrong. Report it, and don't work around it. |
 
@@ -38,7 +38,7 @@ A gate waiting on the e2e lock is working as intended: another checkout is runni
 
 ## Classifying a failure
 
-A failure is one of three things, and only rerunning it alone, with retries off, can tell you which.
+Load the "principle-rerun-alone-then-decide" skill. A failure is one of three things, and only rerunning it alone, with retries off, can tell you which.
 
 | Rerun alone | It's | Do |
 | --- | --- | --- |
@@ -50,8 +50,8 @@ The gate reruns each named failure alone on your branch when the step has a `rer
 
 ## Rules whatever the class
 
-- Never raise a timeout, add a retry, or skip or mark a test to make a gate pass.
+- Fix the cause of a slow or failing test. Keep its timeout and retries as they were, and add no skip or mark to it. Each of those makes the gate pass by hiding the cause.
 - A test that passes only on a retry has not passed.
-- Gate the commit you report. Commit first, then gate; a verdict for an earlier commit proves nothing about this one.
+- Gate the commit you report: commit first, then gate. `node .tangela/scripts/report-facts.mjs` prints the last verdict and whether it gated HEAD.
 - Report numbers, not adjectives: the verdict line, the counts, the times and the load reading.
 - If the gate didn't finish (a lock timeout, a broken contract), say so. Never report a pass you didn't see.
