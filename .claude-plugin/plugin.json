@@ -1,6 +1,6 @@
 {
   "name": "rstack",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "tangela, a method for untangling a codebase that has started to strangle itself, plus the engineering skills it leans on.",
   "author": {
     "name": "Robert Scholey",
