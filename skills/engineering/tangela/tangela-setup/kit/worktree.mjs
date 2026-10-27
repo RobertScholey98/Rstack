@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 // Creates a worktree for one unit: from the right base, with the gitignored
 // files the contract lists, the kit, a scratch folder and a free port.
+// --remove takes one away again.
 //
 //   node .tangela/scripts/worktree.mjs <unit> [--base <ref>] [--no-install]
+//   node .tangela/scripts/worktree.mjs --remove <unit>
 //
 // Without --base, work starts from the contract's default branch; program
-// work passes the program's integration branch. Exit codes: 0 ready,
-// 1 created but something is missing, 2 not created.
+// work passes the program's integration branch. Exit codes: 0 ready (or
+// removed), 1 created but something is missing, 2 not created (or nothing
+// to remove).
 
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:net";
 import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import { parseArgs } from "node:util";
@@ -81,7 +84,39 @@ export async function createWorktree({ cwd = process.cwd(), unit, base, install 
   }
 
   for (const problem of problems) say(`PROBLEM   ${problem}`);
+  say(problems.length ? `WORKTREE MADE WITH PROBLEMS ${path}` : `WORKTREE READY ${path}`);
   return { ...record, path, problems };
+}
+
+// Deletes a unit's worktree folder, then its branch if nothing on it is
+// unmerged. Deleting the folder ourselves, with retries, copes with the deep
+// dependency trees that `git worktree remove` can fail on.
+export function removeWorktree({ cwd = process.cwd(), unit, say = console.log }) {
+  const source = repoRoot(cwd);
+  const contract = readContract(source);
+  const branch = (contract.worktree.branch ?? "tangela/{unit}").replaceAll("{unit}", unit);
+  const path = worktreeOn(source, branch);
+  if (!path) throw new ContractError(`There is no worktree on ${branch}`);
+  if (resolve(path) === resolve(source)) throw new ContractError(`Run --remove from another checkout, not from ${path}`);
+
+  rmSync(path, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+  git(["worktree", "prune"], { cwd: source });
+  say(`removed   ${path}`);
+  if (git(["branch", "-d", branch], { cwd: source, allowFail: true }) === null) {
+    say(`kept ${branch}: it holds commits that aren't merged into ${git(["branch", "--show-current"], { cwd: source }) || "HEAD"}`);
+  } else {
+    say(`deleted   ${branch}`);
+  }
+  say(`WORKTREE REMOVED ${path}`);
+}
+
+function worktreeOn(source, branch) {
+  let path = null;
+  for (const line of git(["worktree", "list", "--porcelain"], { cwd: source }).split("\n")) {
+    if (line.startsWith("worktree ")) path = line.slice("worktree ".length);
+    if (line === `branch refs/heads/${branch}`) return path;
+  }
+  return null;
 }
 
 function copy(from, to) {
@@ -129,13 +164,17 @@ function posix(path) {
 if (isMain(import.meta.url)) {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
-    options: { base: { type: "string" }, "no-install": { type: "boolean" } },
+    options: { base: { type: "string" }, "no-install": { type: "boolean" }, remove: { type: "string" } },
   });
   try {
+    if (values.remove) {
+      removeWorktree({ unit: values.remove });
+      process.exit(0);
+    }
     const result = await createWorktree({ unit: positionals[0], base: values.base, install: !values["no-install"] });
     process.exit(result.problems.length ? 1 : 0);
   } catch (error) {
-    console.error(`WORKTREE NOT CREATED ${error.message}`);
+    console.error(`WORKTREE ${values.remove ? "NOT REMOVED" : "NOT CREATED"} ${error.message}`);
     process.exit(2);
   }
 }

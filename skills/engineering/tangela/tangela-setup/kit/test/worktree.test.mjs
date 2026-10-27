@@ -46,6 +46,42 @@ test("a unit's worktree gets its branch, files, kit, scratch, port and install",
   assert.equal(record.base, "main");
   assert.equal(record.scratch, ".tangela/scratch/add-login");
   assert.ok(record.port >= 47100 && record.port <= 47110, `port ${record.port}`);
+  assert.match(out, new RegExp(`WORKTREE READY .*add-login\\n$`));
+});
+
+test("--remove deletes the worktree and a branch with nothing unmerged", () => {
+  const root = project();
+  runKit("worktree.mjs", ["spike", "--no-install"], { cwd: root });
+  write(worktreeOf(root, "spike"), { "node_modules/deep/a/b/c.js": "x\n" });
+
+  const { code, out } = runKit("worktree.mjs", ["--remove", "spike"], { cwd: root });
+  assert.equal(code, 0, out);
+  assert.equal(existsSync(worktreeOf(root, "spike")), false);
+  assert.equal(git(root, "worktree", "list", "--porcelain").match(/^worktree /gm).length, 1);
+  assert.equal(git(root, "branch", "--list", "tangela/spike"), "");
+  assert.match(out, /WORKTREE REMOVED /);
+});
+
+test("--remove keeps a branch that holds unmerged work, and says so", () => {
+  const root = project();
+  runKit("worktree.mjs", ["half-done", "--no-install"], { cwd: root });
+  const path = worktreeOf(root, "half-done");
+  write(path, { "work.txt": "work\n" });
+  git(path, "add", "work.txt");
+  git(path, "commit", "-q", "-m", "work");
+
+  const { code, out } = runKit("worktree.mjs", ["--remove", "half-done"], { cwd: root });
+  assert.equal(code, 0, out);
+  assert.equal(existsSync(path), false);
+  assert.match(git(root, "branch", "--list", "tangela/half-done"), /tangela\/half-done/);
+  assert.match(out, /kept tangela\/half-done/);
+});
+
+test("--remove of a unit with no worktree changes nothing", () => {
+  const root = project();
+  const { code, out } = runKit("worktree.mjs", ["--remove", "nothing-here"], { cwd: root });
+  assert.equal(code, 2, out);
+  assert.match(out, /no worktree on tangela\/nothing-here/);
 });
 
 test("a second worktree gets a different port", () => {

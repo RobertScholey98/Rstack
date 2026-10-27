@@ -27,11 +27,11 @@ To set up a checkout of your own, run `/tangela-setup`. Without the kit, commits
 
 ## Known failures
 
-<Tests or steps that failed on `<default branch>` at `<short sha>` when this contract was written, with the failing line. A worker who meets one records it as pre-existing. Remove an entry once it's fixed.>
+<Steps left out of every tier because they failed on `<default branch>` at `<short sha>` when this contract was written: the command, and the failing lines. Add a step to its tier once it's fixed. A worker who meets one of these failures records it as pre-existing.>
 
 ## Worktrees
 
-<Which gitignored files a worktree copies, and why it needs each. The install command. The port range, and what limits it.>
+<Which gitignored files a worktree copies, and why it needs each. The install command. The port range, what limits it, and how a worktree turns the port in `.tangela/worktree.json` into the repo's own settings (an env var, or an offset when it needs several ports).>
 
 ## CI
 

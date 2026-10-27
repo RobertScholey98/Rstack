@@ -19,6 +19,7 @@ The check reads the staged files, so it sees what the commit will hold, not the 
 | The repo has | Do |
 | --- | --- |
 | A hooks folder named by `core.hooksPath`, committed | Append the block to that folder's `pre-commit`. |
+| A hook manager that generates the `core.hooksPath` folder when dependencies install, so the folder is gitignored | Append the block to the committed `pre-commit` script the manager runs, not to the generated folder. In a fresh clone `core.hooksPath` is unset until the install runs. |
 | A hook manager configured in a file | Add a pre-commit command that runs the block, in the manager's own config format. Keep the guard. |
 | Only `.git/hooks`, or nothing | Create `.githooks/pre-commit` holding `#!/bin/sh` and the block, commit it, and run `git config core.hooksPath .githooks`. Say in the contract that each clone runs that once. |
 

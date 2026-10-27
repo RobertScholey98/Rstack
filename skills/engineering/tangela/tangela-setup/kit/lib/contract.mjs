@@ -4,6 +4,7 @@ import { git } from "./git.mjs";
 
 export const CONTRACT_PATH = "docs/agents/tangela.md";
 export const TIERS = ["commit", "unit", "widened", "merge", "release"];
+const VERSION = /^v?\d+(\.\d+){0,2}$/;
 
 // A problem with the repo's setup rather than with the code being verified.
 export class ContractError extends Error {}
@@ -46,6 +47,9 @@ export function parseContract(markdown) {
       throw new ContractError(`tiers.${tier} has no steps; leave the tier out if this repo doesn't have it`);
     }
   }
+  if (contract.node !== undefined && !VERSION.test(String(contract.node).trim())) {
+    throw new ContractError(`"node" is "${contract.node}"; give a version or the start of one, such as "24" or "24.13"`);
+  }
 
   return {
     defaultBranch: "main",
@@ -70,7 +74,7 @@ export function expectedNode(root, contract) {
   for (const [from, raw] of candidates) {
     if (raw === undefined || raw === null) continue;
     const version = String(raw).trim().replace(/^v/, "");
-    return /^\d+(\.\d+){0,2}$/.test(version) ? { version, from } : null;
+    return VERSION.test(version) ? { version, from } : null;
   }
   return null;
 }

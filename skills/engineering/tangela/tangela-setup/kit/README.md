@@ -5,7 +5,8 @@ Scripts that `tangela-setup` copies into a repo's gitignored `.tangela/scripts/`
 | Script | Does | Exit codes |
 | --- | --- | --- |
 | `gate.mjs <tier>` | Runs a tier's steps, takes the e2e lock for steps that need it, widens a `unit` gate when the diff touches a shared path, reruns failures alone, and writes `.tangela/logs/last-gate.json` with the commit it gated. | 0 pass, 1 fail, 2 broken setup, 3 load |
-| `worktree.mjs <unit>` | Makes a unit's worktree from the right base, copies in the gitignored files it needs and the kit, and gives it a scratch folder and a free port. | 0 ready, 1 made with problems, 2 not made |
+| `worktree.mjs <unit>` | Makes a unit's worktree from the right base, copies in the gitignored files it needs and the kit, and gives it a scratch folder and a free port. Ends with `WORKTREE READY <path>`. | 0 ready, 1 made with problems, 2 not made |
+| `worktree.mjs --remove <unit>` | Deletes a unit's worktree, then its branch if nothing on it is unmerged. Run it from another checkout. | 0 removed, 2 nothing to remove |
 | `checks/eol-bom.mjs` | Fails on byte-order marks, UTF-16, CRLF and mixed line endings in staged or named files. `--fix` rewrites them. | 0 clean, 1 problems |
 
 The e2e lock lives at `~/.claude/tangela/locks/e2e`, shared by every checkout on the machine. Set `TANGELA_HOME` to move it.
@@ -53,7 +54,7 @@ The e2e lock lives at `~/.claude/tangela/locks/e2e`, shared by every checkout on
 | --- | --- |
 | `contract` | The format version. This kit reads 1. |
 | `defaultBranch` | Where work outside a program starts, and what a `unit` gate diffs against to decide whether to widen. Default `main`. |
-| `node` | Optional. The Node version gates should run on. Without it the kit reads `.nvmrc` or `.node-version`. A mismatch is reported, not fatal. |
+| `node` | Optional. The Node version gates should run on: a version or the start of one, such as `"24"` or `"24.13"`. A range like `^24.13.1` is refused. Without it the kit reads `.nvmrc` or `.node-version`. A mismatch is reported, not fatal. |
 | `tiers` | The steps for each tier: `commit`, `unit`, `widened`, `merge` and `release`. A gate stops at the first failing step. |
 | `widen` | Globs, read like `.gitignore`. When a `unit` gate's diff touches one, the gate runs `widened` instead. |
 | `worktree` | How `worktree.mjs` makes a unit's worktree. |
@@ -67,7 +68,7 @@ Each step has these fields:
 | `run` | The shell command, run from the repo root. |
 | `lock` | `true` takes the machine-wide e2e lock for the step and its reruns. Set it on every step that drives a browser or a shared server. |
 | `failures` | A regular expression matching one failed test per line, with its name in the first group. Without it, a failing step shows the end of its log instead. |
-| `rerun` | The command that runs one failed test alone, with retries off. `{test}` becomes the test's name, quoted. |
+| `rerun` | The command that runs one failed test alone, with retries off. `{test}` becomes what `failures` captured, quoted: a test's name, or its file when the runner reruns by file. Runs from the repo root, so in a monorepo give each package its own step. |
 | `repeat` | How many times to rerun each failure alone. Default 3. |
 
 `worktree` has these fields:
@@ -78,4 +79,4 @@ Each step has these fields:
 | `branch` | The new branch. Default `tangela/{unit}`. |
 | `copy` | Gitignored files a worktree needs, such as local env files, copied from the current checkout. A missing one is reported. |
 | `install` | The command that installs dependencies in the new worktree. Skipped with `--no-install`. |
-| `ports` | `[low, high]`. The first free port that no other worktree of the repo has claimed goes in `.tangela/worktree.json`. |
+| `ports` | `[low, high]`. The first free port that no other worktree of the repo has claimed goes in `.tangela/worktree.json`. A repo that needs several ports per checkout derives them from this one, with an offset, and says how in the contract's prose. |

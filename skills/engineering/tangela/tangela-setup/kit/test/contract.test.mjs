@@ -41,6 +41,11 @@ test("a contract of another version is refused", () => {
   assert.throws(() => parseContract(contract({ contract: 2 })), /reads version 1/);
 });
 
+test("a node range in the contract is refused rather than ignored", () => {
+  assert.throws(() => parseContract(contract({ node: "^24.13.1" })), /"node" is "\^24\.13\.1"/);
+  assert.equal(parseContract(contract({ node: "v24.13" })).node, "v24.13");
+});
+
 test("node versions match as far as the expected version says", () => {
   assert.equal(nodeMatches("24", "24.22.1"), true);
   assert.equal(nodeMatches("24.22", "24.22.1"), true);
