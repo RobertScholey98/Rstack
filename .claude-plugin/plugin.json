@@ -1,0 +1,20 @@
+{
+  "name": "rstack",
+  "version": "0.0.0",
+  "description": "tangela, a method for untangling a codebase that has started to strangle itself, plus the engineering skills it leans on.",
+  "author": {
+    "name": "Robert Scholey",
+    "url": "https://github.com/RobertScholey98"
+  },
+  "repository": "https://github.com/RobertScholey98/Rstack",
+  "license": "MIT",
+  "keywords": [
+    "engineering",
+    "skills",
+    "refactoring",
+    "migration",
+    "architecture",
+    "orchestration"
+  ],
+  "skills": []
+}

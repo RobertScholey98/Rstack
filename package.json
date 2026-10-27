@@ -1,0 +1,22 @@
+{
+  "name": "rstack",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Agent skills for untangling a codebase, and the engineering skills they lean on",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RobertScholey98/Rstack"
+  },
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check.mjs && node --test",
+    "changeset": "changeset",
+    "version": "changeset version && node scripts/sync-plugin-version.mjs"
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.7.0",
+    "@changesets/cli": "^2.30.0"
+  },
+  "packageManager": "npm@11.19.1"
+}
