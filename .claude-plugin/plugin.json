@@ -16,5 +16,14 @@
     "architecture",
     "orchestration"
   ],
-  "skills": []
+  "skills": [
+    "./skills/engineering/grill-me",
+    "./skills/engineering/grill-with-docs",
+    "./skills/engineering/retro",
+    "./skills/engineering/grilling",
+    "./skills/engineering/domain-modeling",
+    "./skills/engineering/codebase-design",
+    "./skills/engineering/tdd",
+    "./skills/engineering/code-review"
+  ]
 }

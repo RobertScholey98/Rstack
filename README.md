@@ -52,15 +52,23 @@ Generic skills tangela leans on, including the `principle-*` leaves. Listed in [
 
 ### User-invoked
 
-None yet.
+- **[grill-me](./skills/engineering/grill-me/SKILL.md)**: A relentless interview to sharpen a plan or design, one question at a time.
+- **[grill-with-docs](./skills/engineering/grill-with-docs/SKILL.md)**: The same interview, which also writes the glossary and ADRs as decisions settle.
+- **[retro](./skills/engineering/retro/SKILL.md)**: Review a coding session and suggest improvements to the agent's environment: checks, standards, steering files and tooling.
 
 ### Model-invoked
 
-None yet.
+- **[grilling](./skills/engineering/grilling/SKILL.md)**: Interview the user one question at a time until a plan is settled.
+- **[domain-modeling](./skills/engineering/domain-modeling/SKILL.md)**: Build and sharpen a project's domain model: challenge terms, test them against scenarios, and update `GLOSSARY.md` and ADRs inline.
+- **[codebase-design](./skills/engineering/codebase-design/SKILL.md)**: The vocabulary for designing deep modules: small interfaces at clean seams, testable through the interface.
+- **[tdd](./skills/engineering/tdd/SKILL.md)**: Test-driven development with a red-green-refactor loop, one vertical slice at a time, at seams agreed up front.
+- **[code-review](./skills/engineering/code-review/SKILL.md)**: Review a diff on two axes in parallel: Standards (the repo's documented standards plus a code-smell baseline) and Spec (does it do what the spec asked).
 
 ## Credits
 
 Rstack is modelled on two libraries: [Matt Pocock's skills](https://github.com/mattpocock/skills), for the layout, the invocation rules and the grilling, design, testing and review skills, and poteto's [pstack](https://github.com/cursor/plugins/tree/main/pstack), for principle leaves and for running a program of agents.
+
+The engineering skills above started as copies of Matt Pocock's, under MIT, and have changed since. [NOTICE](./NOTICE) lists them.
 
 ## Licence
 
